@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="TreeHelper.js"></script>
+    <script src="db.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background Music Player -->
+    <audio id="backgroundMusic" controls autoplay loop>
+        <source src="audio/bg.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div id="info"><strong>Act 1:</strong> Lighteye Sokağında Soygun<br /><small>Terapisti ve asistanını sorgula.</small></div>
+
+    <div id="minimap"></div>
+    <!-- Popup -->
+    <div id="popup">
+        <div id="popup-content">
+            <div id="popup-title">Lighteye</div>
+            <!-- Different image for popup -->
+            <img src="images/map-1-here.webp" alt="Large Map">
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" style="display: none;">
+        <div class="overlay-content" id="overlay-content">
+            <strong>Psikiyatrist William Gray:</strong>
+            <p>Dedektif...</p>
+            <p>Geldiğiniz için teşekkürler. Polisten önce geldiniz!</p>
+            <p>Birisi asistanımı darp edip, çekmecelerimi karıştırmış. Ardından asistanım kapıyı tuttuğu için pencereyi
+                kırarak sokağa doğru kaçmış.</p>
+            <div class="overlay-footer">Press <strong>Space</strong> to continue.</div>
+        </div>
+    </div>
+
+
+    <script>
+
+        document.getElementById("backgroundMusic").volume = 0.3;
+        // Get references to DOM elements
+        const minimap = document.getElementById('minimap');
+        const popup = document.getElementById('popup');
+
+        // Show the popup when the minimap is clicked
+        minimap.addEventListener('click', () => {
+            popup.style.display = 'flex';
+        });
+
+        // Close the popup when clicking outside of the content
+        popup.addEventListener('click', (event) => {
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+
+        // JavaScript to close the overlay on space key press
+        document.addEventListener('keydown', function (event) {
+            if (event.code === 'Space') {
+                const overlay = document.getElementById('overlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                }
+            }
+        });
+
+        // Dinamik olarak .draggable öğeleri eklemek için bir fonksiyon
+        // Global variable to track the last position of the last element (horizontal positioning)
+        let lastXPosition = 20;  // Initial X position (starting from 20px from the left)
+        let lastYPosition = 100;  // Initial Y position (starting from 100px from the top)
+
+        // Dinamik olarak .draggable öğeleri eklemek için bir fonksiyon
+        function addDraggableElement(title, iconClasses = null) {
+            // Yeni bir div oluştur
+            const newDiv = document.createElement('div');
+            newDiv.classList.add('draggable');
+
+            // Eğer bir ikon tanımlanmışsa, ekle
+            if (iconClasses) {
+                const icon = document.createElement('span');
+                icon.classList.add('icon');
+
+                // Tüm sınıfları ayrı ayrı ekle
+                iconClasses.split(' ').forEach(cls => icon.classList.add(cls));
+                newDiv.appendChild(icon);
+            }
+
+            // Küçük metin (alt başlık) ekle
+            const text = document.createElement('div');
+            text.classList.add('title');
+            text.textContent = title; // Metni ekle
+            newDiv.appendChild(text);
+
+            // data-title özelliğini ekle
+            newDiv.setAttribute('data-title', title);
+
+            // Yeni öğeyi body'ye ekle
+            document.body.appendChild(newDiv);
+
+            // Yeni öğeyi yerleştir
+            const margin = 20;  // Öğeler arasındaki yatay mesafe (20px)
+            newDiv.style.position = 'absolute';
+            newDiv.style.top = `${lastYPosition}px`;  // Üstten 20px uzaklık
+            newDiv.style.left = `${lastXPosition}px`;  // X ekseninde sıralı pozisyon
+
+            // Yeni öğeyi eklerken, sonraki öğe için yeni X pozisyonu belirle
+            lastXPosition += newDiv.offsetWidth + margin;  // Öğenin genişliği + margin ile yeni pozisyon
+
+            if (lastXPosition > (10 * (newDiv.offsetWidth + margin))) {
+                lastXPosition = 20;
+                lastYPosition += newDiv.offsetHeight + margin;
+            }
+
+            // Sürüklenebilir özelliklerini ekle
+            makeElementDraggable(newDiv);
+        }
+
+
+
+        // Bir öğeyi sürüklenebilir yapmak için fonksiyon
+        function makeElementDraggable(div) {
+            let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+            // Olayları cihaz türüne göre belirleyelim
+            const startEvent = isTouchDevice ? 'touchstart' : 'mousedown';
+            const moveEvent = isTouchDevice ? 'touchmove' : 'mousemove';
+            const endEvent = isTouchDevice ? 'touchend' : 'mouseup';
+
+            div.addEventListener(startEvent, function (event) {
+                event.preventDefault(); // Dokunma veya fare olaylarını varsayılan davranışlardan korur
+
+                const draggedDiv = div;
+
+                // Başlangıç pozisyonunu al
+                const startX = isTouchDevice ? event.touches[0].clientX : event.clientX;
+                const startY = isTouchDevice ? event.touches[0].clientY : event.clientY;
+
+                const offsetX = startX - div.getBoundingClientRect().left;
+                const offsetY = startY - div.getBoundingClientRect().top;
+
+                // Sürükleme sırasında
+                function onMove(e) {
+                    const clientX = isTouchDevice ? e.touches[0].clientX : e.clientX;
+                    const clientY = isTouchDevice ? e.touches[0].clientY : e.clientY;
+
+                    draggedDiv.style.left = clientX - offsetX + 'px';
+                    draggedDiv.style.top = clientY - offsetY + 'px';
+                }
+
+                // Sürükleme işlemi bittiğinde
+                function onEnd(e) {
+                    const endX = isTouchDevice ? e.changedTouches[0].clientX : e.clientX;
+                    const endY = isTouchDevice ? e.changedTouches[0].clientY : e.clientY;
+
+                    // Fare veya dokunma pozisyonu
+                    const droppedX = endX;
+                    const droppedY = endY;
+
+                    // Çakışma kontrolü
+                    document.querySelectorAll('.draggable').forEach(function (otherDiv) {
+                        if (otherDiv !== draggedDiv) {
+                            const otherRect = otherDiv.getBoundingClientRect();
+
+                            if (
+                                droppedX >= otherRect.left &&
+                                droppedX <= otherRect.right &&
+                                droppedY >= otherRect.top &&
+                                droppedY <= otherRect.bottom
+                            ) {
+                                combine(draggedDiv, otherDiv);
+                            }
+                        }
+                    });
+
+                    // Olay dinleyicilerini temizle
+                    document.removeEventListener(moveEvent, onMove);
+                    document.removeEventListener(endEvent, onEnd);
+                }
+
+                // Olay dinleyicilerini ekle
+                document.addEventListener(moveEvent, onMove);
+                document.addEventListener(endEvent, onEnd);
+            });
+        }
+
+
+        // combine fonksiyonu
+        function combine(div1, div2) {
+            const title1 = div1.getAttribute('data-title');  // İlk öğenin title'ını al
+            const title2 = div2.getAttribute('data-title');  // İkinci öğenin title'ını al
+
+            // Yeni öğeleri oluştur ve başarılı birleşimi işle
+            const newNodes = processCombine(title1, title2);
+
+            if (newNodes && newNodes.length > 0) {
+                // Eski div'leri ekrandan kaldır
+                div1.remove();
+                div2.remove();
+
+                // Yeni öğelerin eklenmesiyle son X pozisyonunu güncelle
+                // lastXPosition = 20;  // Yeniden başlat, eğer düzenlemeyi sıfırlamak isterseniz
+
+                // Yeni öğeleri ekle
+                newNodes.forEach(function (newNode) {
+                    addDraggableElement(newNode.data, newNode.icon);
+                });
+            }
+        }
+
+
+        // processCombine fonksiyonu, iki node'un birleşiminden sonra yeni id'leri döndüren fonksiyon
+        function processCombine(node1, node2) {
+
+            // Eğer node1 veya node2 "You" ise, overlay'u göster
+            if (node1 === "NELER OLDU BURADA?" || node2 === "NELER OLDU BURADA?") {
+                const overlay = document.getElementById('overlay');
+                overlay.style.display = 'flex';
+                const overlayContent = document.getElementById('overlay-content');
+                overlayContent.style.display = 'block';
+            }
+
+
+            const relations = Story.getInstance().getRelation(node1, node2);
+            console.log(relations);
+
+            return relations;
+
+
+        }
+
+        // Dinamik olarak .draggable öğeleri ekleyelim (örnek)
+        addDraggableElement('You', 'fa-solid fa-person');
+        addDraggableElement('Psikiyatri Polikliniği', 'fa-solid fa-door-closed');
+
+    </script>
+</body>
+
+</html>

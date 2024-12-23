@@ -1,0 +1,176 @@
+body {
+  background: linear-gradient(135deg, #1b1b1b, #2a2a2a, #3d3d3d); /* Koyu, derin renk tonları */
+  background-size: 400% 400%; /* Gradientin yavaşça hareket etmesi için */
+  animation: gradientAnimation 15s ease infinite; /* Arka planın hareket etmesi için animasyon */
+  color: #e6d8a8; /* Yazı rengi */
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+audio {
+  display: fixed;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+}
+
+#info {
+  background: linear-gradient(145deg, #3a3a3a, #1e1e1e); /* Dark metallic gradient */
+  border: 2px solid #8b5a2b; /* Bronze-like border */
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: #e6d8a8; /* Pale gold text */
+  font-family: 'Cinzel', serif; /* Adds a medieval-style font (import from Google Fonts if necessary) */
+  font-size: 18px;
+  text-shadow: 0 0 5px #ffcc66, 0 0 10px #8b5a2b; /* Glow effect */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7), inset 0 0 5px rgba(0, 0, 0, 0.5); /* Outer shadow and inset shadow for depth */
+  text-align: center;
+  width: fit-content;
+  margin: 20px auto;
+}
+
+#info strong {
+  color: #ffcc66; /* Highlight for "Act 1" */
+  text-shadow: 0 0 8px #ffcc66, 0 0 12px #8b5a2b;
+}
+
+#info small {
+  display: block; /* Make the small text block-level for better readability */
+  color: #a8a8a8; /* Lighter text for the secondary information */
+  font-size: 14px; /* Slightly smaller for emphasis */
+  margin-top: 10px;
+}
+
+.overlay {
+  font-family: "Merriweather", serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 1);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.overlay-content {
+  text-align: justify;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.overlay-footer {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #ccc;
+}
+
+.draggable {
+  position: absolute;
+  width: 100px;
+  height: 120px;
+  background-color: #f5f5f5;
+  border: 4px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  font-family: Arial, sans-serif;
+}
+
+.draggable:hover {
+  border: 4px solid #999;
+}
+
+.draggable .icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #333;
+  /* İkonun rengini belirleyin */
+}
+
+.draggable .title {
+  font-size: 12px;
+  color: #666;
+}
+
+.draggable {
+  user-select: none;
+  /* Metin seçimini engeller */
+}
+
+#minimap {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 200px;
+  height: 200px;
+  background-image: url('images/map-1.webp');
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #333;
+  cursor: zoom-in;
+  z-index: 1000;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+/* Popup styles */
+#popup {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  /* Semi-transparent background */
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup content */
+#popup-content {
+  position: relative;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 90%;
+  max-height: 90%;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+#popup-content img {
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+#popup-title {
+  margin: 10px 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
