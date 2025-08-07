@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule C Filling for Amazon Sellers</title>
+    <style>
+        body {
+            font-family: Georgia, "Times New Roman", Times, serif;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 90%;
+            text-align: justify;
+            margin: 1.5rem 0;
+        }
+        h1 {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+            text-align: center;
+        }
+        h2 {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #222;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        p {
+            margin: 1rem 0;
+            padding: 0 1rem;
+        }
+        a.button {
+            display: inline-block;
+            margin: 1rem 0;
+            padding: 0.75rem 1.5rem;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        a.button:hover {
+            background-color: #357abd;
+        }
+        input[type="file"] {
+            margin: 1.5rem 0;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            background-color: #fafafa;
+        }
+        #results {
+            margin-top: 2rem;
+            padding: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+            display: none;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .error {
+            color: #d32f2f;
+            display: none;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+        /* Schedule C Table Styling */
+        table.schedule-c {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+            color: #333;
+        }
+        table.schedule-c th, table.schedule-c td {
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        table.schedule-c th {
+            background-color: #f0f0f0;
+            font-weight: 600;
+        }
+        table.schedule-c td {
+            background-color: #fff;
+        }
+        table.schedule-c .header-row {
+            background-color: #e0e0e0;
+            font-weight: 600;
+        }
+        table.schedule-c .part-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            background-color: #d9d9d9;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        table.schedule-c .checkbox-cell {
+            width: 20px;
+            text-align: center;
+        }
+        table.schedule-c .amount-cell {
+            width: 80px;
+            text-align: right;
+            position: relative;
+        }
+        table.schedule-c .amount-cell span {
+            cursor: help;
+        }
+        table.schedule-c .editable {
+            width: 80px;
+            border: 1px solid #ccc;
+            padding: 0.25rem;
+            text-align: right;
+            background-color: #fff;
+            font-size: 1rem;
+        }
+        table.schedule-c .instruction {
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        /* Variables List Styling */
+        #variables-list {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none;
+        }
+        #variables-list p {
+            margin: 0.75rem 0;
+            font-size: 1rem;
+        }
+        #toggle-variables {
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        #toggle-variables:hover {
+            background-color: #357abd;
+        }
+        /* Privacy Notice and File List Styling */
+        #privacy-notice {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #666;
+            text-align: left;
+            padding: 1rem;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #file-list {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        #file-list table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+        }
+        #file-list th {
+            background-color: #f9f9f9;
+            color: #888;
+            font-weight: 500;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        #file-list td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        #file-list .rate-input {
+            width: 100px;
+            padding: 0.3rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        #file-list .delete-btn {
+            padding: 0.3rem 0.75rem;
+            background-color: #ff4444;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        #file-list .delete-btn:hover {
+            background-color: #cc0000;
+        }
+        /* Currency Section Styling */
+        #currency-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #currency-section select, #currency-section input {
+            margin: 0.75rem 0;
+            padding: 0.5rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        /* Disclaimer Styling */
+        #disclaimer {
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            color: #666;
+            text-align: center;
+            padding: 1rem;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+                margin: 0.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 0.9rem;
+            }
+            a.button, #toggle-variables {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+            input[type="file"] {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+            table.schedule-c {
+                font-size: 0.9rem;
+            }
+            table.schedule-c td, table.schedule-c th {
+                padding: 0.25rem;
+            }
+            table.schedule-c .editable {
+                width: 60px;
+            }
+            #toggle-variables {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+            #variables-list {
+                font-size: 0.9rem;
+            }
+            #privacy-notice {
+                font-size: 0.85rem;
+            }
+            #file-list {
+                font-size: 0.9rem;
+            }
+            #file-list th {
+                padding: 0.25rem;
+                font-size: 0.85rem;
+            }
+            #file-list td {
+                padding: 0.25rem;
+            }
+            #file-list .rate-input {
+                width: 80px;
+                font-size: 0.85rem;
+                padding: 0.2rem;
+            }
+            #file-list .delete-btn {
+                font-size: 0.8rem;
+                padding: 0.2rem 0.5rem;
+            }
+            #currency-section {
+                font-size: 0.9rem;
+            }
+            #currency-section select, #currency-section input {
+                font-size: 0.85rem;
+                padding: 0.3rem;
+            }
+            #disclaimer {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Schedule C Filling for Amazon Sellers</h1>
+        <content>
+            <h2>Schedule-C for Amazon Sellers</h2>
+            <p>As an Amazon seller, I’ve found Profit and Loss tables super handy for Schedule-C forms. They show me my income and expenses fast. Amazon’s Monthly Summary Reports save me time with all the data I need. But if you’ve got extra cash or costs outside those, you just add them manually.</p>
+
+            <h2>Get your Monthly Summary Report</h2>
+            <p><a href="https://sellercentral.amazon.com/payments/reports-repository/ref=xx_rrepo_dnav_xx" target="_blank" class="button">Go to Amazon Reports Repository</a></p>
+            <p>I’ve been using Amazon’s Monthly Summary and Transaction Reports for a while now, and they’re a lifesaver for my Schedule-C. They give me a quick rundown of my earnings and expenses. Just head to the <strong>Payments > Reports Repository</strong> page on Amazon Seller Central, pick ‘Transaction’ as the Report Type, and set your date range to grab the data you need.</p>
+
+            <h2>What if your store is not in the United States?</h2>
+            <div id="currency-section">
+                <label for="marketplace-currency">Select your marketplace currency:</label>
+                <select id="marketplace-currency" onchange="updateCurrencySection()">
+                    <option value="USD">USD (United States Dollar)</option>
+                    <option value="EUR">EUR (Euro)</option>
+                    <option value="MXN">MXN (Mexican Peso)</option>
+                    <option value="CAD">CAD (Canadian Dollar)</option>
+                    <option value="JPY">JPY (Japanese Yen)</option>
+                </select>
+                <p>Find approved currency exchange rates at <a href="https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates" target="_blank">IRS Yearly Average Currency Exchange Rates</a>.</p>
+                <label for="default-currency-rate">Default currency rate to USD (e.g., 0.85 for EUR, used if not specified per file):</label>
+                <input type="number" id="default-currency-rate" step="0.01" min="0" placeholder="e.g., 0.85" value="1.0">
+            </div>
+
+            <h2>Prepare your Schedule-C</h2>
+            <p>The tool will aggregate all values from all the uploaded reports.</p>
+
+            <!-- Extractor Section -->
+            <div id="extractor-section">
+                <input type="file" id="csvFile" accept=".csv" multiple>
+                <div id="privacy-notice">Privacy Notice: All operations are performed locally in your browser. No data is transferred to any servers.</div>
+                <div id="file-list"></div>
+                <p class="error" id="error">Please upload valid CSV files.</p>
+                <div id="results"></div>
+                <button id="toggle-variables">Show All Variables</button>
+                <div id="variables-list"></div>
+            </div>
+            <!-- End Extractor Section -->
+        </content>
+
+        <div id="disclaimer">I am not a tax expert. This tool is not intended for final tax calculations and is provided solely to automate preliminary data processing. Results are for informational purposes only and may contain errors. Always consult a qualified tax professional and verify calculations at least twice with official records.</div>
+    </div>
+
+    <script>
+        let uploadedFiles = [];
+        let defaultCurrencyRate = 1.0;
+
+        document.getElementById('csvFile').addEventListener('change', handleFileSelect);
+
+        function updateCurrencySection() {
+            defaultCurrencyRate = parseFloat(document.getElementById('default-currency-rate').value) || 1.0;
+        }
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+
+            if (files.length === 0) {
+                error.style.display = 'block';
+                results.style.display = 'none';
+                updateFileList();
+                return;
+            }
+
+            if (uploadedFiles.length + files.length > 36) {
+                error.textContent = 'Maximum limit of 36 files exceeded. Only the first 36 files will be processed.';
+                error.style.display = 'block';
+                Array.from(files).slice(0, 36 - uploadedFiles.length).forEach(file => {
+                    if (!uploadedFiles.some(f => f.file.name === file.name)) {
+                        uploadedFiles.push({ file: file, rate: defaultCurrencyRate });
+                    }
+                });
+            } else {
+                error.style.display = 'none';
+                Array.from(files).forEach(file => {
+                    if (!uploadedFiles.some(f => f.file.name === file.name)) {
+                        uploadedFiles.push({ file: file, rate: defaultCurrencyRate });
+                    }
+                });
+            }
+
+            updateFileList();
+            processAllFiles();
+        }
+
+        function updateFileList() {
+            const fileListDiv = document.getElementById('file-list');
+            fileListDiv.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Currency Rate</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${uploadedFiles.map(item => `
+                            <tr>
+                                <td>${item.file.name}</td>
+                                <td><input type="number" class="rate-input" value="${item.rate}" step="0.01" min="0" onchange="updateFileRate('${item.file.name}', this.value)"></td>
+                                <td><button class="delete-btn" onclick="deleteFile('${item.file.name}')">Delete</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        function updateFileRate(fileName, rate) {
+            const item = uploadedFiles.find(item => item.file.name === fileName);
+            if (item) {
+                item.rate = parseFloat(rate) || defaultCurrencyRate;
+                processAllFiles(); // Recalculate with updated rate
+            }
+        }
+
+        function deleteFile(fileName) {
+            uploadedFiles = uploadedFiles.filter(item => item.file.name !== fileName);
+            updateFileList();
+            if (uploadedFiles.length > 0) {
+                processAllFiles();
+            } else {
+                const results = document.getElementById('results');
+                results.style.display = 'none';
+                const variablesList = document.getElementById('variables-list');
+                variablesList.style.display = 'none';
+                variablesList.innerHTML = '';
+            }
+        }
+
+        function processAllFiles() {
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+            error.style.display = 'none';
+
+            let incomeProductSalesNonFBA = 0;
+            let incomeProductSalesFBA = 0;
+            let incomeProductSalesRefundNonFBA = 0;
+            let incomeProductSalesRefundFBA = 0;
+            let incomeFBAInventoryCredit = 0;
+            let expenseFBAInboundServicesFee = 0;
+            let expenseFBATransactionFee = 0;
+            let serviceFees = 0;
+            let incomeShippingCredits = 0;
+            let incomePromotionalRebates = 0;
+            let incomeFbaLiquidationProceeds = 0;
+            let expenseLiquidationsFee = 0;
+            let expenseCostOfAdvertising = 0;
+
+            const processFile = (fileIndex) => {
+                if (fileIndex >= uploadedFiles.length) {
+                    const scheduleCIncomeGrossSales = incomeProductSalesNonFBA + incomeProductSalesFBA + incomeFBAInventoryCredit + incomeShippingCredits + incomeFbaLiquidationProceeds;
+                    const scheduleCIncomeReturnsAllowance = incomeProductSalesRefundNonFBA + incomeProductSalesRefundFBA + incomePromotionalRebates;
+                    const scheduleCExpenseCommissionsFees = expenseFBAInboundServicesFee + expenseFBATransactionFee + serviceFees + expenseLiquidationsFee;
+                    const scheduleCExpenseCostOfAdvertising = expenseCostOfAdvertising;
+                    const question3 = scheduleCIncomeGrossSales - Math.abs(scheduleCIncomeReturnsAllowance);
+
+                    let question4 = 0; // Default value for editable field
+                    let question6 = 0; // Default value for editable field
+
+                    results.innerHTML = `
+                        <table class="schedule-c">
+                            <tr><td colspan="3" class="part-title">Part I - Income</td></tr>
+                            <tr class="header-row">
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Gross receipts or sales. See instructions for line 1 and check the box if this income was reported to you on Form W-2 and the "Statutory employee" box on that form was checked</td>
+                                <td class="amount-cell"><span title="incomeProductSalesNonFBA + incomeProductSalesFBA + incomeFBAInventoryCredit + incomeShippingCredits + incomeFbaLiquidationProceeds">$${scheduleCIncomeGrossSales.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Returns and allowances</td>
+                                <td class="amount-cell"><span title="incomeProductSalesRefundNonFBA + incomeProductSalesRefundFBA + incomePromotionalRebates">$${scheduleCIncomeReturnsAllowance.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Subtract line 2 from line 1</td>
+                                <td class="amount-cell" id="q3"><span title="scheduleCIncomeGrossSales - abs(scheduleCIncomeReturnsAllowance)">$${question3.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Cost of goods sold (from line 42)</td>
+                                <td class="amount-cell"><input type="number" id="q4" class="editable" value="${question4}" onchange="updateCalculations()"></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Gross profit. Subtract line 4 from line 3</td>
+                                <td class="amount-cell" id="q5"><span title="question3 - abs(question4)">$${question3.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Other income, including federal and state gasoline or fuel tax credit or refund (see instructions)</td>
+                                <td class="amount-cell"><input type="number" id="q6" class="editable" value="${question6}" onchange="updateCalculations()"></td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Gross income. Add lines 5 and 6</td>
+                                <td class="amount-cell" id="q7"><span title="question5 + abs(question6)">$${question3.toFixed(2)}</span></td>
+                            </tr>
+                            <tr><td colspan="3" class="part-title">Part II - Expenses. Enter expenses for business use of your home only on line 30.</td></tr>
+                            <tr class="header-row">
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Advertising</td>
+                                <td class="amount-cell"><span title="scheduleCExpenseCostOfAdvertising">$${scheduleCExpenseCostOfAdvertising.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Car and truck expenses (see instructions)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>Commissions and fees</td>
+                                <td class="amount-cell"><span title="expenseFBAInboundServicesFee + expenseFBATransactionFee + serviceFees + expenseLiquidationsFee">$${scheduleCExpenseCommissionsFees.toFixed(2)}</span></td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>Contract labor (see instructions)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>Depletion (see instructions)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td>Depreciation and section 179 expense deduction (not included in Part III) (see instructions)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>Employee benefit programs (other than on line 19)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td>Insurance (other than health)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>16</td>
+                                <td>Interest (see instructions):
+                                    <br><span class="instruction">a Mortgage (paid to banks, etc.)</span>
+                                    <br><span class="instruction">b Other</span>
+                                </td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>17</td>
+                                <td>Legal and professional services</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>18</td>
+                                <td>Office expense (see instructions)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>19</td>
+                                <td>Pension and profit-sharing plans</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>20</td>
+                                <td>Rent or lease (see instructions):
+                                    <br><span class="instruction">a Vehicles, machinery, and equipment</span>
+                                    <br><span class="instruction">b Other business property</span>
+                                </td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>21</td>
+                                <td>Repairs and maintenance</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>22</td>
+                                <td>Supplies (not included in Part III)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>23</td>
+                                <td>Taxes and licenses</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>24</td>
+                                <td>Travel and meals:
+                                    <br><span class="instruction">a Travel</span>
+                                    <br><span class="instruction">b Deductible meals (see instructions)</span>
+                                </td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>25</td>
+                                <td>Utilities</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>26</td>
+                                <td>Wages (less employment credits)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>27</td>
+                                <td>Other expenses (from line 48)</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>28</td>
+                                <td>Total expenses before expenses for business use of home. Add lines 8 through 27b</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>29</td>
+                                <td>Tentative profit or (loss). Subtract line 28 from line 7</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>30</td>
+                                <td>Expenses for business use of your home. Do not report these expenses elsewhere. Attach Form 8829 unless using the simplified method. See instructions</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td>31</td>
+                                <td>Net profit or (loss). Subtract line 30 from line 29.</td>
+                                <td class="amount-cell">$0.00</td>
+                            </tr>
+                        </table>
+                    `;
+                    results.style.display = 'block';
+                    setTimeout(updateCalculations, 0);
+
+                    // Update variables list
+                    const variablesList = document.getElementById('variables-list');
+                    variablesList.innerHTML = `
+                        <p><strong>INCOME_PRODUCT_SALES_NON_FBA:</strong> $${incomeProductSalesNonFBA.toFixed(2)}</p>
+                        <p><strong>INCOME_PRODUCT_SALES_FBA:</strong> $${incomeProductSalesFBA.toFixed(2)}</p>
+                        <p><strong>INCOME_PRODUCT_SALES_REFUND_NON_FBA:</strong> $${incomeProductSalesRefundNonFBA.toFixed(2)}</p>
+                        <p><strong>INCOME_PRODUCT_SALES_REFUND_FBA:</strong> $${incomeProductSalesRefundFBA.toFixed(2)}</p>
+                        <p><strong>INCOME_SHIPPING_CREDITS:</strong> $${incomeShippingCredits.toFixed(2)}</p>
+                        <p><strong>INCOME_PROMOTIONAL_REBATES:</strong> $${incomePromotionalRebates.toFixed(2)}</p>
+                        <p><strong>INCOME_FBA_INVENTORY_CREDIT:</strong> $${incomeFBAInventoryCredit.toFixed(2)}</p>
+                        <p><strong>INCOME_FBA_LIQUIDATION_PROCEEDS:</strong> $${incomeFbaLiquidationProceeds.toFixed(2)}</p>
+                        <p><strong>EXPENSE_FBA_INBOUND_SERVICES_FEE:</strong> $${expenseFBAInboundServicesFee.toFixed(2)}</p>
+                        <p><strong>EXPENSE_FBA_TRANSACTION_FEE:</strong> $${expenseFBATransactionFee.toFixed(2)}</p>
+                        <p><strong>SERVICE_FEES:</strong> $${serviceFees.toFixed(2)}</p>
+                        <p><strong>EXPENSE_LIQUIDATIONS_FEE:</strong> $${expenseLiquidationsFee.toFixed(2)}</p>
+                        <p><strong>EXPENSE_COST_OF_ADVERTISING:</strong> $${expenseCostOfAdvertising.toFixed(2)}</p>
+                        <p><strong>SCHEDULEC_INCOME_GROSS_SALES:</strong> $${scheduleCIncomeGrossSales.toFixed(2)}</p>
+                        <p><strong>SCHEDULEC_INCOME_RETURNS_ALLOWANCE:</strong> $${scheduleCIncomeReturnsAllowance.toFixed(2)}</p>
+                        <p><strong>SCHEDULEC_EXPENSE_COMMISSIONS_FEES:</strong> $${scheduleCExpenseCommissionsFees.toFixed(2)}</p>
+                        <p><strong>SCHEDULEC_EXPENSE_COST_OF_ADVERTISING:</strong> $${scheduleCExpenseCostOfAdvertising.toFixed(2)}</p>
+                    `;
+                    return;
+                }
+
+                const item = uploadedFiles[fileIndex];
+                const file = item.file;
+                const rate = item.rate || defaultCurrencyRate;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const csvText = e.target.result;
+                    const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+                    if (lines.length < 9) {
+                        console.warn(`File ${file.name} has insufficient lines. Skipping.`);
+                        processFile(fileIndex + 1);
+                        return;
+                    }
+
+                    const data = lines.slice(8).map(line => {
+                        const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
+                        return (line.match(regex) || []).map(field => 
+                            field.replace(/^"|"$/g, '').trim()
+                        );
+                    }).filter(row => row.length >= 29);
+
+                    if (data.length === 0) {
+                        console.warn(`No valid data found in ${file.name}. Skipping.`);
+                        processFile(fileIndex + 1);
+                        return;
+                    }
+
+                    data.forEach(row => {
+                        const type = row[2] || '';
+                        const fulfillment = row[8] || '';
+                        let productSalesPrice = parseFloat(row[13]) || 0;
+                        let shippingCredits = parseFloat(row[15]) || 0;
+                        let promotionalRebate = parseFloat(row[21]) || 0;
+                        let other = parseFloat(row[27]) || 0;
+                        let total = parseFloat(row[28]) || 0;
+                        let fbaFees = parseFloat(row[25]) || 0;
+                        let otherTransactionFees = parseFloat(row[26]) || 0; // 27th column
+                        const description = row[5] || ''; // 6th column
+
+                        // Apply currency conversion if rate is not 1.0
+                        if (rate !== 1.0) {
+                            productSalesPrice = productSalesPrice / rate;
+                            shippingCredits = shippingCredits / rate;
+                            promotionalRebate = promotionalRebate / rate;
+                            other = other / rate;
+                            total = total / rate;
+                            fbaFees = fbaFees / rate;
+                            otherTransactionFees = otherTransactionFees / rate;
+                        }
+
+                        if (type === 'Order') {
+                            if (fulfillment === 'Amazon') {
+                                incomeProductSalesFBA += productSalesPrice;
+                                expenseFBATransactionFee += fbaFees;
+                            } else {
+                                incomeProductSalesNonFBA += productSalesPrice;
+                            }
+                            incomeShippingCredits += shippingCredits;
+                            incomePromotionalRebates += promotionalRebate;
+                        }
+                        if (type === 'Refund') {
+                            if (fulfillment === 'Amazon') {
+                                incomeProductSalesRefundFBA += productSalesPrice;
+                            } else {
+                                incomeProductSalesRefundNonFBA += productSalesPrice;
+                            }
+                        }
+                        if (type === 'Adjustment' && other > 0) {
+                            incomeFBAInventoryCredit += other;
+                        }
+                        if (type === 'FBA Inventory Fee') {
+                            expenseFBAInboundServicesFee += other;
+                        }
+                        if (type === 'Service Fee') {
+                            if (description === 'Subscription') {
+                                serviceFees += total;
+                            } else if (description === 'Cost of Advertising') {
+                                expenseCostOfAdvertising += total;
+                            }
+                        }
+                        if (type === 'Liquidations') {
+                            incomeFbaLiquidationProceeds += productSalesPrice;
+                            expenseLiquidationsFee += otherTransactionFees;
+                        }
+                    });
+
+                    processFile(fileIndex + 1);
+                };
+                reader.readAsText(file);
+            };
+
+            processFile(0);
+        }
+
+        document.getElementById('toggle-variables').addEventListener('click', function() {
+            const variablesList = document.getElementById('variables-list');
+            if (variablesList.style.display === 'none' || variablesList.style.display === '') {
+                variablesList.style.display = 'block';
+                this.textContent = 'Hide All Variables';
+            } else {
+                variablesList.style.display = 'none';
+                this.textContent = 'Show All Variables';
+            }
+        });
+
+        function updateCalculations() {
+            const q3Element = document.getElementById('q3');
+            if (!q3Element) {
+                console.error('Element with id "q3" not found');
+                return;
+            }
+            const q4Value = parseFloat(document.getElementById('q4').value) || 0;
+            const q6Value = parseFloat(document.getElementById('q6').value) || 0;
+            const q3Value = parseFloat(q3Element.textContent.replace('$', '')) || 0;
+            const q5Value = q3Value - Math.abs(q4Value);
+            const q7Value = q5Value + Math.abs(q6Value); // Uses ABS(Question6)
+
+            document.getElementById('q5').textContent = `$${q5Value.toFixed(2)}`;
+            document.getElementById('q7').textContent = `$${q7Value.toFixed(2)}`;
+        }
+
+        function displayError(message) {
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+            error.textContent = message;
+            error.style.display = 'block';
+            results.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
