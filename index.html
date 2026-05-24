@@ -417,6 +417,180 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    /* ═══════════════════════════════════════════
+       FLAPPY HEAD — GAME STYLES
+    ═══════════════════════════════════════════ */
+
+    .game-start-btn {
+      position: absolute;
+      bottom: -3.4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--syne);
+      font-weight: 700;
+      font-size: 0.62rem;
+      letter-spacing: 0.13em;
+      color: var(--fg);
+      background: var(--bg);
+      border: 1.5px solid var(--fg);
+      padding: 0.65rem 1.4rem;
+      cursor: pointer;
+      white-space: nowrap;
+      border-radius: 3px;
+      box-shadow: 3px 3px 0 var(--fg);
+      pointer-events: all;
+      transition: box-shadow 0.12s ease, transform 0.12s ease;
+    }
+    .game-start-btn:hover {
+      box-shadow: 1px 1px 0 var(--fg);
+      transform: translateX(-50%) translate(2px, 2px);
+    }
+
+    #game-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9100;
+      background: var(--bg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #exitGameBtn {
+      position: fixed;
+      top: 1.4rem;
+      right: 1.6rem;
+      z-index: 9200;
+      font-family: var(--sans);
+      font-size: 1rem;
+      color: var(--dim);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, color 0.2s ease;
+    }
+    #exitGameBtn.visible { opacity: 1; pointer-events: all; }
+    #exitGameBtn:hover { color: var(--fg); }
+
+    #tapToFlap {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--syne);
+      font-weight: 700;
+      font-size: clamp(1.2rem, 3.5vw, 2rem);
+      letter-spacing: 0.1em;
+      color: var(--fg);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9200;
+      text-align: center;
+      user-select: none;
+      transition: opacity 0.4s ease;
+    }
+    #tapToFlap.visible { opacity: 1; }
+
+    #gameOverScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      transition: opacity 0.5s ease, backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
+    }
+    #gameOverScreen.visible {
+      opacity: 1;
+      pointer-events: all;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .game-over-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .game-over-msg {
+      font-family: var(--syne);
+      font-weight: 700;
+      font-size: clamp(1.6rem, 4.5vw, 3rem);
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      text-align: center;
+      max-width: 680px;
+      line-height: 1.1;
+    }
+
+    .game-over-stats {
+      font-family: var(--sans);
+      font-weight: 400;
+      font-size: clamp(0.85rem, 1.4vw, 1rem);
+      color: var(--mid);
+      text-align: center;
+    }
+
+    .game-over-score {
+      font-family: var(--syne);
+      font-weight: 700;
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: var(--dim);
+      letter-spacing: 0.06em;
+    }
+
+    .game-over-btns {
+      display: flex;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .game-over-btns button {
+      font-family: var(--syne);
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.6rem;
+      border: 1px solid var(--fg);
+      background: transparent;
+      color: var(--fg);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .game-over-btns button:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
   </style>
 </head>
 <body>
@@ -550,6 +724,28 @@
   </section>
 
   <!-- ════════════════════════════════════════
+       GAME OVERLAY
+  ════════════════════════════════════════ -->
+  <div id="game-overlay" aria-hidden="true">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <button id="exitGameBtn" aria-label="Oyundan çık">✕</button>
+  <div id="tapToFlap">TAP TO FLAP</div>
+
+  <div id="gameOverScreen" aria-live="polite">
+    <div class="game-over-card">
+      <p class="game-over-msg" id="gameOverMsg"></p>
+      <p class="game-over-stats" id="gameOverStats"></p>
+      <p class="game-over-score" id="gameOverScore"></p>
+      <div class="game-over-btns">
+        <button id="restartBtn">Tekrar Oyna</button>
+        <button id="exitBackBtn">Geri Dön</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
        SCRIPTS
   ════════════════════════════════════════ -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -652,6 +848,434 @@
         });
       });
     }
+  </script>
+
+  <script>
+  // ════════════════════════════════════════
+  //  FLAPPY HEAD
+  // ════════════════════════════════════════
+  (function () {
+    'use strict';
+
+    const CFG = {
+      gravity:          0.45,
+      flapForce:       -9.5,
+      startSpeed:       3.2,
+      speedMax:         7.0,
+      speedStep:        0.25,
+      gapMin:           233,
+      gapMax:           300,
+      obstacleW:        62,
+      obstacleInterval: 300,
+    };
+
+    // ── Obstacle logos ──
+    const obsImages = {};
+    { const map = { jira: 'obs/jira.svg', aws: 'obs/aws.svg', k8s: 'obs/kubernetes.png', teams: 'obs/microsoft-teams.svg' };
+      Object.entries(map).forEach(([k, src]) => { const i = new Image(); i.src = src; obsImages[k] = i; }); }
+
+    const OBSTACLE_TYPES = [
+      { img: 'jira',  color: '#2684FF', cat: 'tool'    },
+      { img: 'teams', color: '#5059C9', cat: 'meeting'  },
+      { img: 'aws',   color: '#FF9900', cat: 'tool'     },
+      { img: 'k8s',   color: '#326CE5', cat: 'tool'     },
+      { lines: ['MERGE',    'CONFLICT'],  color: '#E44D26', cat: 'crisis'  },
+      { lines: ['HOTFIX',   'NOW'],       color: '#E74C3C', cat: 'crisis'  },
+      { lines: ['TESTS',    'FAILING'],   color: '#C0392B', cat: 'crisis'  },
+      { lines: ['502',      'BAD GW'],    color: '#922B21', cat: 'crisis'  },
+      { lines: ['ON-CALL',  'ALERT'],     color: '#E74C3C', cat: 'crisis'  },
+      { lines: ['SPRINT',   'PLANNING'],  color: '#16A085', cat: 'meeting' },
+      { lines: ['DEADLINE', 'TODAY'],     color: '#D35400', cat: 'crisis'  },
+      { lines: ['REPLY',    'ALL'],       color: '#7F8C8D', cat: 'meeting' },
+      { lines: ['SCOPE',    'CREEP'],     color: '#8E44AD', cat: 'process' },
+      { lines: ['LEGACY',   'CODE'],      color: '#5D6D7E', cat: 'tool'    },
+      { lines: ['CODE',     'REVIEW'],    color: '#6C3483', cat: 'process' },
+      { lines: ['BUDGET',   'MEETING'],   color: '#117A65', cat: 'meeting' },
+    ];
+
+    const DEATH_MSGS = [
+      { max: 3,        text: 'Kariyer henüz başlıyor...' },
+      { max: 8,        text: 'Bu tanıdık gelmiyor mu?' },
+      { max: 15,       text: 'Neredeyse kurtuldun.' },
+      { max: Infinity, text: 'Bu yüzden kendi şirketimi kurdum.' },
+    ];
+
+    // ── DOM ──
+    const overlay       = document.getElementById('game-overlay');
+    const canvas        = document.getElementById('gameCanvas');
+    const ctx           = canvas.getContext('2d');
+    const exitBtn       = document.getElementById('exitGameBtn');
+    const tapLabel      = document.getElementById('tapToFlap');
+    const overScreen    = document.getElementById('gameOverScreen');
+    const overMsg       = document.getElementById('gameOverMsg');
+    const overStats     = document.getElementById('gameOverStats');
+    const overScore     = document.getElementById('gameOverScore');
+    const restartBtn    = document.getElementById('restartBtn');
+    const exitBackBtn   = document.getElementById('exitBackBtn');
+    const portraitWrap  = document.querySelector('.hero-portrait-wrap');
+    const portraitImg   = portraitWrap.querySelector('.hero-portrait');
+
+    // ── State ──
+    let gameState = 'idle';
+    let raf = null;
+    let player, obstacles, score, meetingCount, crisisCount, toolCount, speed, traveled, nextSpawn;
+    let playerBaseTop = 0;
+
+    function resetState() {
+      playerBaseTop = parseFloat(portraitWrap.style.top) || 0;
+      const pw = portraitImg.offsetWidth  || 62;
+      const ph = portraitImg.offsetHeight || 72;
+      player = {
+        x:  parseFloat(portraitWrap.style.left) || window.innerWidth * 0.14,
+        y:  playerBaseTop,
+        vy: 0,
+        w:  pw,
+        h:  ph,
+      };
+      portraitWrap.style.transform = 'none';
+      obstacles    = [];
+      score        = 0;
+      meetingCount = 0;
+      crisisCount  = 0;
+      toolCount    = 0;
+      speed        = CFG.startSpeed;
+      traveled     = 0;
+      nextSpawn    = CFG.obstacleInterval;
+    }
+
+    // ── Physics / flap ──
+    function flap() {
+      if (gameState === 'waiting') {
+        gameState = 'playing';
+        tapLabel.classList.remove('visible');
+        spawnObstacle(Math.round(canvas.width * 0.62));
+        nextSpawn = CFG.obstacleInterval;
+      }
+      if (gameState === 'playing') player.vy = CFG.flapForce;
+    }
+
+    // ── Spawn ──
+    function spawnObstacle(startX) {
+      const H = canvas.height;
+      const gap  = CFG.gapMin + Math.random() * (CFG.gapMax - CFG.gapMin);
+      const top  = 70 + Math.random() * (H - gap - 140);
+      const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+      obstacles.push({ x: startX ?? canvas.width, gapTop: top, gapBot: top + gap, passed: false, type });
+    }
+
+    // ── Collision ──
+    function hit() {
+      const m = 7;
+      const { x, y, w, h } = player;
+      if (y + h - m > canvas.height || y + m < 0) return true;
+      for (const o of obstacles) {
+        const inX = x + w - m > o.x + m && x + m < o.x + CFG.obstacleW - m;
+        if (inX && (y + m < o.gapTop || y + h - m > o.gapBot)) return true;
+      }
+      return false;
+    }
+
+    // ── Draw ──
+    function draw() {
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Background
+      ctx.fillStyle = '#F7F4EF';
+      ctx.fillRect(0, 0, W, H);
+
+      // Subtle grid
+      ctx.strokeStyle = '#E8E4DC';
+      ctx.lineWidth = 1;
+      const gs = 48;
+      for (let x = 0; x < W; x += gs) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += gs) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+      // Obstacles
+      for (const o of obstacles) {
+        const ow = CFG.obstacleW;
+        ctx.fillStyle = o.type.color;
+        ctx.fillRect(o.x, 0, ow, o.gapTop);
+        ctx.fillRect(o.x, o.gapBot, ow, H - o.gapBot);
+
+        // Gap edge caps
+        ctx.fillStyle = shadeColor(o.type.color, -20);
+        ctx.fillRect(o.x - 4, o.gapTop - 10, ow + 8, 10);
+        ctx.fillRect(o.x - 4, o.gapBot,       ow + 8, 10);
+
+        // Label chip — dark pill that overflows the pillar for max readability
+        const cx    = o.x + ow / 2;
+        const chipW = 180;
+        const chipH = 48;
+        const chipX = cx - chipW / 2;
+        const chipY = o.gapTop - chipH - 8;
+        if (chipY >= 2) {
+          // Rounded rect background
+          const r = 10;
+          ctx.fillStyle = 'rgba(12, 12, 10, 0.85)';
+          ctx.beginPath();
+          ctx.moveTo(chipX + r, chipY);
+          ctx.lineTo(chipX + chipW - r, chipY);
+          ctx.arcTo(chipX + chipW, chipY,          chipX + chipW, chipY + r,          r);
+          ctx.lineTo(chipX + chipW, chipY + chipH - r);
+          ctx.arcTo(chipX + chipW, chipY + chipH,  chipX + chipW - r, chipY + chipH,  r);
+          ctx.lineTo(chipX + r,    chipY + chipH);
+          ctx.arcTo(chipX,         chipY + chipH,  chipX,           chipY + chipH - r, r);
+          ctx.lineTo(chipX,        chipY + r);
+          ctx.arcTo(chipX,         chipY,           chipX + r,       chipY,             r);
+          ctx.closePath();
+          ctx.fill();
+
+          if (o.type.img) {
+            const im = obsImages[o.type.img];
+            if (im && im.complete && im.naturalWidth > 0) {
+              const ih = chipH - 14;
+              const iw = ih * (im.naturalWidth / im.naturalHeight);
+              ctx.drawImage(im, cx - iw / 2, chipY + 7, iw, ih);
+            }
+          } else if (o.type.lines) {
+            const label = o.type.lines.join('  ');
+            ctx.font = '800 20px "Space Grotesk", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, cx, chipY + chipH / 2);
+          }
+        }
+      }
+
+      // Score (portrait is a live DOM element, not drawn on canvas)
+      if (gameState === 'playing' || gameState === 'dead') {
+        const fs = Math.max(22, Math.min(W * 0.038, 44));
+        ctx.font = `700 ${fs}px "Space Grotesk", sans-serif`;
+        ctx.fillStyle = '#0C0C0A';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(score, W / 2, 28);
+      }
+    }
+
+    function shadeColor(hex, pct) {
+      const n = parseInt(hex.slice(1), 16);
+      const r = Math.min(255, Math.max(0, (n >> 16) + pct));
+      const g = Math.min(255, Math.max(0, ((n >> 8) & 0xff) + pct));
+      const b = Math.min(255, Math.max(0, (n & 0xff) + pct));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    // ── Loop ──
+    function loop() {
+      if (gameState === 'playing') {
+        player.vy += CFG.gravity;
+        player.y  += player.vy;
+
+        // Move DOM portrait with physics
+        const dy   = player.y - playerBaseTop;
+        const tilt = Math.min(Math.max(player.vy * 2.5, -28), 28);
+        portraitWrap.style.transform = `translateY(${dy}px) rotate(${tilt}deg)`;
+
+        obstacles.forEach(o => { o.x -= speed; });
+        obstacles = obstacles.filter(o => o.x + CFG.obstacleW > 0);
+
+        traveled += speed;
+        if (traveled >= nextSpawn) {
+          spawnObstacle();
+          nextSpawn = traveled + CFG.obstacleInterval;
+        }
+
+        obstacles.forEach(o => {
+          if (!o.passed && o.x + CFG.obstacleW < player.x) {
+            o.passed = true;
+            score++;
+            const c = o.type.cat;
+            if (c === 'meeting') meetingCount++; else if (c === 'crisis') crisisCount++; else toolCount++;
+            if (score % 10 === 0) speed = Math.min(speed + CFG.speedStep, CFG.speedMax);
+          }
+        });
+
+        if (hit()) {
+          gameState = 'dead';
+          draw();
+          showDeath();
+          return;
+        }
+      }
+
+      draw();
+      raf = requestAnimationFrame(loop);
+    }
+
+    function showDeath() {
+      const msg = DEATH_MSGS.find(m => score <= m.max) || DEATH_MSGS[DEATH_MSGS.length - 1];
+      overMsg.textContent   = msg.text;
+      overStats.textContent = `${meetingCount} toplantı, ${crisisCount} kriz, ${toolCount} bildirim atlattın`;
+
+      const hi = parseInt(localStorage.getItem('flappy-hi') || '0');
+      if (score > hi) localStorage.setItem('flappy-hi', score);
+      const hiStr = Math.max(score, hi);
+      overScore.textContent = `Skor: ${score}  ·  En yüksek: ${hiStr}`;
+
+      overScreen.classList.add('visible');
+    }
+
+    // ── Transition: idle → game ──
+    function startTransition() {
+      if (gameState !== 'idle') return;
+      gameState = 'transitioning';
+
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Snapshot viewport position BEFORE any transforms are applied
+      const rect = portraitWrap.getBoundingClientRect();
+
+      // Move portrait to <body> so parent's GSAP transform doesn't drag it along
+      // (transform on a parent breaks position:fixed children)
+      document.body.appendChild(portraitWrap);
+      portraitWrap.style.position  = 'fixed';
+      portraitWrap.style.top       = rect.top  + 'px';
+      portraitWrap.style.left      = rect.left + 'px';
+      portraitWrap.style.right     = 'auto';
+      portraitWrap.style.bottom    = 'auto';
+      portraitWrap.style.transform = 'none';
+      portraitWrap.style.animation = 'none';
+      portraitWrap.style.zIndex    = '9300';
+
+      // Hide play button during game
+      const playBtn = portraitWrap.querySelector('.game-start-btn');
+      if (playBtn) playBtn.style.display = 'none';
+
+      // Slide all page sections out
+      const slideOut = -(window.innerWidth + 200);
+      gsap.to(['.scene-hero', '.divider', '.scene-rest'], {
+        x: slideOut,
+        duration: 0.7,
+        ease: 'power3.in',
+        stagger: 0.07,
+      });
+
+      // Shrink portrait to game size
+      const gameW = 62;
+      gsap.to(portraitImg, {
+        width: gameW,
+        duration: 0.65,
+        ease: 'power2.inOut',
+        delay: 0.1,
+      });
+
+      // Move portrait to game start position
+      const aspectR = (portraitImg.naturalHeight || 993) / (portraitImg.naturalWidth || 860);
+      const gameH   = Math.round(gameW * aspectR);
+      const tx = window.innerWidth  * 0.17 - gameW / 2;
+      const ty = window.innerHeight * 0.47 - gameH / 2;
+
+      gsap.to(portraitWrap, {
+        top: ty, left: tx,
+        duration: 0.9,
+        delay: 0.22,
+        ease: 'power3.out',
+        onComplete() {
+          overlay.style.opacity       = '1';
+          overlay.style.pointerEvents = 'all';
+          exitBtn.classList.add('visible');
+          tapLabel.classList.add('visible');
+
+          resetState();
+          gameState = 'waiting';
+          raf = requestAnimationFrame(loop);
+        },
+      });
+    }
+
+    // ── Exit game → restore page ──
+    function exitGame() {
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
+      gameState = 'idle';
+
+      overScreen.classList.remove('visible');
+      tapLabel.classList.remove('visible');
+      exitBtn.classList.remove('visible');
+
+      overlay.style.opacity       = '0';
+      overlay.style.pointerEvents = 'none';
+
+      // Kill any running GSAP tweens on portrait elements
+      gsap.killTweensOf(portraitWrap);
+      gsap.killTweensOf(portraitImg);
+
+      // Restore portrait img to CSS-controlled size
+      portraitImg.style.width = '';
+
+      // Move portrait back into scene-hero and clear all inline overrides
+      portraitWrap.style.cssText = '';
+      document.querySelector('.scene-hero').appendChild(portraitWrap);
+
+      // Restore play button
+      const playBtn = portraitWrap.querySelector('.game-start-btn');
+      if (playBtn) playBtn.style.display = '';
+
+      // Slide page back in and clear GSAP inline transforms
+      gsap.to(['.scene-hero', '.divider', '.scene-rest'], {
+        x: 0,
+        duration: 0.65,
+        ease: 'power3.out',
+        stagger: 0.05,
+        onComplete() {
+          gsap.set(['.scene-hero', '.divider', '.scene-rest'], { clearProps: 'x' });
+        },
+      });
+    }
+
+    // ── Bootstrap ──
+    function init() {
+      // Play button
+      const btn = document.createElement('button');
+      btn.className = 'game-start-btn';
+      btn.textContent = 'click me';
+      btn.setAttribute('aria-label', 'Oyunu başlat');
+      portraitWrap.appendChild(btn);
+      btn.addEventListener('click', startTransition);
+
+      // Controls
+      exitBtn.addEventListener('click', exitGame);
+      exitBackBtn.addEventListener('click', exitGame);
+
+      restartBtn.addEventListener('click', () => {
+        overScreen.classList.remove('visible');
+        resetState();
+        gameState = 'waiting';
+        tapLabel.classList.add('visible');
+        raf = requestAnimationFrame(loop);
+      });
+
+      window.addEventListener('pointerdown', (e) => {
+        if (gameState !== 'waiting' && gameState !== 'playing') return;
+        if (e.target.closest('#exitGameBtn') || e.target.closest('#gameOverScreen')) return;
+        flap();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
+          e.preventDefault();
+          if (gameState === 'waiting' || gameState === 'playing') flap();
+        }
+        if (e.code === 'Escape' && gameState !== 'idle') exitGame();
+      });
+
+      window.addEventListener('resize', () => {
+        if (gameState !== 'idle') {
+          canvas.width  = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  }());
   </script>
 
 </body>
