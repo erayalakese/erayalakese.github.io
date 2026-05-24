@@ -94,26 +94,33 @@
     .hero-name {
       font-family: var(--syne);
       font-weight: 800;
-      font-size: clamp(82px, 19vw, 260px);
       line-height: 0.87;
       letter-spacing: -0.045em;
       color: var(--fg);
       overflow: visible;
       pointer-events: none;
       user-select: none;
+      position: relative;
+      z-index: 10;
     }
 
     .name-line {
       display: block;
       will-change: transform;
     }
+
+    /* ERAY — 22vw × 1.75 = same visual width as ALAKESE at 12.5vw */
     .name-line-1 {
-      padding-left: clamp(1.2rem, 14vw, 18rem);
+      font-size: clamp(68px, 22vw, 310px);
+      padding-left: clamp(1.2rem, 4vw, 5rem);
     }
+
+    /* ALAKESE — 12.5vw, left-aligned, matching ERAY's width */
     .name-line-2 {
-      text-align: right;
-      padding-right: clamp(1.2rem, 6vw, 8rem);
-      margin-top: -0.06em;
+      font-size: clamp(39px, 12.5vw, 176px);
+      text-align: left;
+      padding-left: clamp(1.2rem, 4vw, 5rem);
+      margin-top: -0.12em;
     }
 
     /* ── Bottom row: role + rooftop — absolutely pinned to bottom ── */
@@ -186,6 +193,56 @@
     }
     .rooftop-link:hover .rooftop-arrow {
       transform: translate(2px, -2px);
+    }
+
+    /* ── Portrait ── */
+    @keyframes portrait-bob {
+      0%, 100% { transform: translateY(-50%); }
+      50%       { transform: translateY(calc(-50% - 16px)) rotate(1.3deg); }
+    }
+
+    @keyframes portrait-bob-mobile {
+      0%, 100% { transform: translateX(-50%); }
+      50%       { transform: translateX(-50%) translateY(-11px) rotate(1deg); }
+    }
+
+    /* Wrapper: handles position + float animation (CSS transform) */
+    .hero-portrait-wrap {
+      position: absolute;
+      right: clamp(2rem, 6vw, 8rem);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      animation: portrait-bob 5.5s ease-in-out infinite;
+    }
+
+    /* Img: only size + rendering — GSAP entrance (opacity/scale) applied here */
+    .hero-portrait {
+      display: block;
+      width: clamp(120px, 15vw, 210px);
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    @media (max-width: 640px) {
+      .hero-portrait-wrap {
+        right: auto;
+        top: auto;
+        bottom: clamp(7rem, 16vh, 10rem);
+        left: 50%;
+        transform: translateX(-50%);
+        animation-name: portrait-bob-mobile;
+      }
+      .hero-portrait {
+        width: clamp(88px, 26vw, 140px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-portrait-wrap { animation: none !important; }
     }
 
     /* ═══════════════════════════════════════════
@@ -355,6 +412,17 @@
       <span class="name-line name-line-2" aria-hidden="true">ALAKESE</span>
     </h1>
 
+    <div class="hero-portrait-wrap" aria-hidden="true">
+      <img
+        src="eray.png"
+        alt=""
+        class="hero-portrait"
+        width="860"
+        height="993"
+        loading="eager"
+      >
+    </div>
+
     <div class="hero-bottom">
       <p class="hero-role">
         Founder<br>
@@ -482,6 +550,7 @@
       gsap.set('.name-line-1', { x: '-5vw', opacity: 0 });
       gsap.set('.name-line-2', { x:  '5vw', opacity: 0 });
       gsap.set('.hero-bottom', { opacity: 0, y: 18 });
+      gsap.set('.hero-portrait', { opacity: 0, scale: 0.85 });
 
       const hero = gsap.timeline({ delay: 0.08 });
 
@@ -496,11 +565,16 @@
           duration: 1.15,
           ease: 'power4.out',
         }, '-=1.0')
+        .to('.hero-portrait', {
+          opacity: 1, scale: 1,
+          duration: 0.75,
+          ease: 'back.out(1.6)',
+        }, '-=0.7')
         .to('.hero-bottom', {
           opacity: 1, y: 0,
           duration: 0.9,
           ease: 'power3.out',
-        }, '-=0.55');
+        }, '-=0.5');
     }
 
     // ─── Subtle name parallax on scroll ───
